@@ -45,9 +45,51 @@
                 "description": "Virtual network name for the cluster"
             }
         },
+        "vnetAddressPrefix": {
+            "type": "string",
+            "defaultValue": "10.0.0.0/16",
+            "metadata": {
+                "description": "IP address in CIDR for virtual network"
+            }
+        },
+        "dbSubnetAddressPrefix": {
+            "type": "string",
+            "defaultValue": "10.0.1.0/24",
+            "metadata": {
+                "description": "IP address in CIDR for db subnetq"
+            }
+        },
         "dbSubnetName": {
             "type": "string",
             "defaultValue": "dbsubnet",
+            "metadata": {
+                "description": "subnet name for the MySQL nodes"
+            }
+        },
+        "appSubnetAddressPrefix": {
+            "type": "string",
+            "defaultValue": "10.0.1.0/24",
+            "metadata": {
+                "description": "IP address in CIDR for db subnetq"
+            }
+        },
+        "appSubnetName": {
+            "type": "string",
+            "defaultValue": "appsubnet",
+            "metadata": {
+                "description": "subnet name for the APP nodes"
+            }
+        },
+        "frontSubnetAddressPrefix": {
+            "type": "string",
+            "defaultValue": "10.0.3.0/24",
+            "metadata": {
+                "description": "IP address in CIDR for db subnetq"
+            }
+        },
+        "frontSubnetName": {
+            "type": "string",
+            "defaultValue": "frontsubnet",
             "metadata": {
                 "description": "subnet name for the MySQL nodes"
             }
