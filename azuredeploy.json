@@ -68,7 +68,7 @@
         },
         "appSubnetAddressPrefix": {
             "type": "string",
-            "defaultValue": "10.0.1.0/24",
+            "defaultValue": "10.0.2.0/24",
             "metadata": {
                 "description": "IP address in CIDR for db subnetq"
             }

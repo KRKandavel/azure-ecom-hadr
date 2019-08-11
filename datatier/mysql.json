@@ -196,7 +196,7 @@
 
         "vnetName": "[uniqueString(resourceGroup().id, parameters('virtualNetworkName'))]",
         "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',parameters('virtualNetworkName'))]",
-         "dbsubnetName": "[uniqueString(resourceGroup().id, parameters('dbSubnetName'))]",
+        "dbsubnetName": "[uniqueString(resourceGroup().id, parameters('dbSubnetName'))]",
         "dbsubnetID": "[concat(variables('vnetID'), '/subnets/', parameters('dbSubnetName'))]",
 
         "nodeCount": 2,
