@@ -211,7 +211,6 @@
         "nicName": "[concat(parameters('dnsName'), '-nic')]",
         "availabilitySetName": "[concat(parameters('dnsName'), '-set')]",
         "singleQuote": "",
-        "virtualNetworkSetupURL": "[concat(parameters('_artifactsLocation'),'/vnet-',parameters('vnetNewOrExisting'),'.json')]",
         "sa": "[parameters('dbSubnetStartAddress')]",
         "ipOctet01": "[concat(split(variables('sa'), '.')[0], '.', split(variables('sa'), '.')[1], '.')]",
         "ipOctet2": "[int(split(variables('sa'), '.')[2])]",

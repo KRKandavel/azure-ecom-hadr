@@ -139,13 +139,13 @@
                     "mysqlProbePassword": {
                         "value": "[parameters('mysqlProbePassword')]"
                     },
-
                     "virtualNetworkName": {
                         "value": "[parameters('virtualNetworkName')]"
                     },
                     "dbSubnetName": {
                         "value": "[parameters('dbSubnetName')]"
-                    }                 }
+                    }                 
+                }
             }
         }
     ],
