@@ -195,7 +195,7 @@
         "mysqlConfigFilePath": "[uri(parameters('_artifactsLocation'), concat('datatier/scripts/my.cnf.template', parameters('_artifactsLocationSasToken')))]",
 
         "vnetName": "[uniqueString(resourceGroup().id, parameters('virtualNetworkName'))]",
-        "vnetID": "[resourceId(resourceGroup().id, concat('Microsoft.Network/VirtualNetwork', '/', 'virtualNetworks'), parameters('virtualNetworkName'))]",
+        "vnetID": "[resourceId(resourceGroup().id, concat('Microsoft.Network', '/', 'virtualNetworks', '/'), parameters('virtualNetworkName'))]",
         "dbsubnetName": "[uniqueString(resourceGroup().id, parameters('dbSubnetName'))]",
         "dbsubnetID": "[concat(variables('vnetID'), '/subnets/', parameters('dbSubnetName'))]",
 
