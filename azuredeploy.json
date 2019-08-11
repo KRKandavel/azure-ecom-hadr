@@ -219,7 +219,7 @@
             "metadata": {
                 "description": "The location of resources, such as templates and DSC modules, that the template depends on"
             },
-            "defaultValue": "https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/azure-sql-managed-instance/"
+            "defaultValue": "https://raw.githubusercontent.com/KRKandavel/azure-ecom-hadr/master/"
         },
         "_artifactsLocationSasToken": {
             "type": "securestring",
