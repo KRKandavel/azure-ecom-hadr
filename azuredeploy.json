@@ -102,6 +102,35 @@
                 "description": "IP address in CIDR for db subnetq"
             }
         },
+        "appSubnetName": {
+            "type": "string",
+            "defaultValue": "appsubnet",
+            "metadata": {
+                "description": "subnet name for the App nodes"
+            }
+        },
+        "appSubnetAddressPrefix": {
+            "type": "string",
+            "defaultValue": "10.0.2.0/24",
+            "metadata": {
+                "description": "IP address in CIDR for app subnetq"
+            }
+        },
+        "frontSubnetName": {
+            "type": "string",
+            "defaultValue": "frontsubnet",
+            "metadata": {
+                "description": "subnet name for the app nodes"
+            }
+        },
+        "frontSubnetAddressPrefix": {
+            "type": "string",
+            "defaultValue": "10.0.3.0/24",
+            "metadata": {
+                "description": "IP address in CIDR for front subnetq"
+            }
+        },
+
         "dbSubnetStartAddress": {
             "type": "string",
             "defaultValue": "10.0.1.4",
@@ -276,19 +305,16 @@
                         "value": "[parameters('dbSubnetAddressPrefix')]"
                     },
                     "appSubnetName": {
-                        "value": "[parameters('dbSubnetName')]"
+                        "value": "[parameters('appSubnetName')]"
                     },
                     "appSubnetAddressPrefix": {
-                        "value": "[parameters('dbSubnetAddressPrefix')]"
+                        "value": "[parameters('appSubnetAddressPrefix')]"
                     },
                     "frontSubnetName": {
-                        "value": "[parameters('dbSubnetName')]"
+                        "value": "[parameters('frontSubnetName')]"
                     },
                     "frontSubnetAddressPrefix": {
-                        "value": "[parameters('dbSubnetAddressPrefix')]"
-                    },
-                    "virtualNetworkExistingRGName": {
-                        "value": "[parameters('virtualNetworkExistingRGName')]"
+                        "value": "[parameters('frontSubnetAddressPrefix')]"
                     }
                 }
             }
