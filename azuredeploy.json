@@ -164,7 +164,7 @@
                     }
                 }
             }
-        }
+        },
          {
             "name": "SettingUpMySQLReplication",
             "type": "Microsoft.Resources/deployments",
