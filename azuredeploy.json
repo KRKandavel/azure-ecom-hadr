@@ -159,6 +159,9 @@
             "name": "SettingUpMySQLReplication",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2015-01-01",
+            "dependsOn": [
+                "[concat('Microsoft.Resources/deployments/', 'SettingUpVirtualNetwork')]"
+            ],
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
