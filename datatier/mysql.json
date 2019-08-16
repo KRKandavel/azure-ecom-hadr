@@ -111,48 +111,6 @@
                 "description": "VM OS version"
             }
         },
-        "mysqlFrontEndPort0": {
-            "type": "int",
-            "defaultValue": 3306,
-            "metadata": {
-                "description": "MySQL public port master"
-            }
-        },
-        "mysqlFrontEndPort1": {
-            "type": "int",
-            "defaultValue": 3307,
-            "metadata": {
-                "description": "MySQL public port slave"
-            }
-        },
-        "sshNatRuleFrontEndPort0": {
-            "type": "int",
-            "defaultValue": 64001,
-            "metadata": {
-                "description": "public ssh port for VM1"
-            }
-        },
-        "sshNatRuleFrontEndPort1": {
-            "type": "int",
-            "defaultValue": 64002,
-            "metadata": {
-                "description": "public ssh port for VM2"
-            }
-        },
-        "mysqlProbePort0": {
-            "type": "int",
-            "defaultValue": 9200,
-            "metadata": {
-                "description": "MySQL public port master"
-            }
-        },
-        "mysqlProbePort1": {
-            "type": "int",
-            "defaultValue": 9201,
-            "metadata": {
-                "description": "MySQL public port slave"
-            }
-        },
         "customScriptCommandToExecute": {
             "type": "string",
             "defaultValue": "bash azuremysql.sh",
@@ -174,6 +132,13 @@
                 "description": "Location for all resources."
             }
         },
+        "zones": {
+            "type": "string",
+            "defaultValue": "1",
+            "metadata": {
+                "description": "Zones for all resources."
+            }
+        },
         "_artifactsLocation": {
             "type": "string",
             "metadata": {
@@ -188,7 +153,6 @@
             },
             "defaultValue": ""
         }
-
     },
     "variables": {
         "customScriptFilePath": "[uri(parameters('_artifactsLocation'), concat('datatier/scripts/azuremysql.sh', parameters('_artifactsLocationSasToken')))]",
@@ -217,18 +181,6 @@
         "ipOctet3": "[int(split(variables('sa'), '.')[3])]"
     },
     "resources": [
-        {
-            "apiVersion": "2015-06-15",
-            "type": "Microsoft.Network/publicIPAddresses",
-            "name": "[variables('lbPublicIPName')]",
-            "location": "[parameters('location')]",
-            "properties": {
-                "publicIPAllocationMethod": "Static",
-                "dnsSettings": {
-                    "domainNameLabel": "[parameters('dnsName')]"
-                }
-            }
-        },
         {
             "apiVersion": "2017-03-30",
             "type": "Microsoft.Compute/availabilitySets",
@@ -297,6 +249,9 @@
             "dependsOn": [
                 "[concat('Microsoft.Compute/availabilitySets/', variables('availabilitySetName'))]",
                 "[concat('Microsoft.Network/networkInterfaces/', variables('nicName'), copyIndex())]"
+            ],
+            "zones": [
+                "[parameters('zones')]"
             ],
             "properties": {
                 "availabilitySet": {
@@ -382,106 +337,6 @@
                 "protectedSettings": {
                     "commandToExecute": "[concat(parameters('customScriptCommandToExecute'), ' ', copyIndex(1), ' ', variables('ipOctet01'), add(variables('ipOctet2'), div(copyIndex(variables('ipOctet3')), 255)), '.', mod(copyIndex(variables('ipOctet3')), 255), ' ', variables('mysqlConfigFilePath'), ' ', variables('singleQuote'), parameters('mysqlReplicationPassword'), variables('singleQuote'), ' ', variables('singleQuote'), parameters('mysqlRootPassword'), variables('singleQuote'), ' ', variables('singleQuote'), parameters('mysqlProbePassword'), variables('singleQuote'), ' ', parameters('dbSubnetStartAddress'))]"
                 }
-            }
-        },
-        {
-            "apiVersion": "2015-06-15",
-            "type": "Microsoft.Network/loadBalancers",
-            "name": "[variables('lbName')]",
-            "location": "[parameters('location')]",
-            "dependsOn": [
-                "[concat('Microsoft.Network/publicIPAddresses/', variables('lbPublicIPName'))]"
-            ],
-            "properties": {
-                "frontendIPConfigurations": [
-                    {
-                        "name": "[variables('sshIPConfigName')]",
-                        "properties": {
-                            "publicIPAddress": {
-                                "id": "[variables('lbPublicIPRef')]"
-                            }
-                        }
-                    }
-                ],
-                "backendAddressPools": [
-                    {
-                        "name": "[variables('ilbBackendAddressPoolName')]"
-                    }
-                ],
-                "inboundNatRules": [
-                    {
-                        "name": "[concat(parameters('dnsName'),'NatRule0')]",
-                        "properties": {
-                            "frontendIPConfiguration": {
-                                "id": "[variables('sshIPConfig')]"
-                            },
-                            "protocol": "Tcp",
-                            "frontendPort": "[parameters('sshNatRuleFrontEndPort0')]",
-                            "backendPort": 22,
-                            "enableFloatingIP": false
-                        }
-                    },
-                    {
-                        "name": "[concat(parameters('dnsName'),'NatRule1')]",
-                        "properties": {
-                            "frontendIPConfiguration": {
-                                "id": "[variables('sshIPConfig')]"
-                            },
-                            "protocol": "Tcp",
-                            "frontendPort": "[parameters('sshNatRuleFrontEndPort1')]",
-                            "backendPort": 22,
-                            "enableFloatingIP": false
-                        }
-                    },
-                    {
-                        "name": "[concat(parameters('dnsName'),'MySQLNatRule0')]",
-                        "properties": {
-                            "frontendIPConfiguration": {
-                                "id": "[variables('sshIPConfig')]"
-                            },
-                            "protocol": "Tcp",
-                            "frontendPort": "[parameters('mysqlFrontEndPort0')]",
-                            "backendPort": 3306,
-                            "enableFloatingIP": false
-                        }
-                    },
-                    {
-                        "name": "[concat(parameters('dnsName'),'MySQLNatRule1')]",
-                        "properties": {
-                            "frontendIPConfiguration": {
-                                "id": "[variables('sshIPConfig')]"
-                            },
-                            "protocol": "Tcp",
-                            "frontendPort": "[parameters('mysqlFrontEndPort1')]",
-                            "backendPort": 3306,
-                            "enableFloatingIP": false
-                        }
-                    },
-                    {
-                        "name": "[concat(parameters('dnsName'),'ProbeNatRule0')]",
-                        "properties": {
-                            "frontendIPConfiguration": {
-                                "id": "[variables('sshIPConfig')]"
-                            },
-                            "protocol": "Tcp",
-                            "frontendPort": "[parameters('mysqlProbePort0')]",
-                            "backendPort": 9200,
-                            "enableFloatingIP": false
-                        }
-                    },
-                    {
-                        "name": "[concat(parameters('dnsName'),'ProbeNatRule1')]",
-                        "properties": {
-                            "frontendIPConfiguration": {
-                                "id": "[variables('sshIPConfig')]"
-                            },
-                            "protocol": "Tcp",
-                            "frontendPort": "[parameters('mysqlProbePort1')]",
-                            "backendPort": 9200,
-                            "enableFloatingIP": false
-                        }
-                    }
-                ]
             }
         }
     ],
