@@ -204,7 +204,7 @@
                 "count": "[variables('nodeCount')]"
             },
             "dependsOn": [
-                "[concat('Microsoft.Network/loadBalancers', variables('lbName'))]"
+                "[concat('Microsoft.Network/loadBalancers/', variables('lbName'))]"
             ],
             "properties": {
                 "ipConfigurations": [
