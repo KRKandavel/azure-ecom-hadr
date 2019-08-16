@@ -94,6 +94,13 @@
                 "description": "subnet name for the MySQL nodes"
             }
         },
+        "publicIPName": {
+            "type": "string",
+            "defaultValue": "mysqlIP01",
+            "metadata": {
+                "description": "public IP name for MySQL loadbalancer"
+            }
+        },
         "_artifactsLocation": {
             "type": "string",
             "metadata": {
@@ -151,11 +158,14 @@
                     },
                     "frontSubnetAddressPrefix": {
                         "value": "[parameters('frontSubnetAddressPrefix')]"
+                    },
+                    "publicIPName": {
+                        "value": "[parameters('publicIPName')]"
                     }
                 }
             }
-        },
-        {
+        }
+         {
             "name": "SettingUpMySQLReplication",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2015-01-01",
