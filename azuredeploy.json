@@ -158,9 +158,6 @@
                     },
                     "frontSubnetAddressPrefix": {
                         "value": "[parameters('frontSubnetAddressPrefix')]"
-                    },
-                    "publicIPName": {
-                        "value": "[parameters('publicIPName')]"
                     }
                 }
             }
