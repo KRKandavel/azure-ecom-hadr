@@ -90,6 +90,13 @@
             "description": "MySQL public port slave"
         }
     },
+    "publicIPName": {
+        "type": "string",
+        "defaultValue": "mysqlIP01",
+        "metadata": {
+            "description": "public IP name for MySQL loadbalancer"
+        }
+    },
     "location": {
         "type": "string",
         "defaultValue": "[resourceGroup().location]",
