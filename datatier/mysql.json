@@ -182,19 +182,6 @@
     },
     "resources": [
         {
-            "apiVersion": "2017-03-30",
-            "type": "Microsoft.Compute/availabilitySets",
-            "location": "[parameters('location')]",
-            "name": "[variables('availabilitySetName')]",
-            "properties": {
-                "PlatformUpdateDomainCount": 20,
-                "PlatformFaultDomainCount": 2
-            },
-            "sku": {
-                "name": "Aligned"
-            }
-        },
-        {
             "apiVersion": "2015-06-15",
             "type": "Microsoft.Network/networkInterfaces",
             "name": "[concat(variables('nicName'), copyIndex())]",
@@ -247,16 +234,12 @@
                 "count": "[variables('nodeCount')]"
             },
             "dependsOn": [
-                "[concat('Microsoft.Compute/availabilitySets/', variables('availabilitySetName'))]",
                 "[concat('Microsoft.Network/networkInterfaces/', variables('nicName'), copyIndex())]"
             ],
             "zones": [
                 "[parameters('zones')]"
             ],
             "properties": {
-                "availabilitySet": {
-                    "id": "[resourceId('Microsoft.Compute/availabilitySets', variables('availabilitySetName'))]"
-                },
                 "hardwareProfile": {
                     "vmSize": "[parameters('vmSize')]"
                 },
