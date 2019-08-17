@@ -126,7 +126,8 @@
       "ilbBackendAddressPoolID": "[concat(variables('lbID'),'/backendAddressPools/', variables('ilbBackendAddressPoolName'))]",
       "sshIPConfigName": "[concat(parameters('dnsName'), '-sshIPCfg')]",
       "sshIPConfig": "[concat(variables('lbID'),'/frontendIPConfigurations/',variables('sshIPConfigName'))]",
-      "lbProbeID": "[concat(variables('lbID'),'/probes/tcpProbe')]"
+      "lbProbeID": "[concat(variables('lbID'),'/probes/tcpProbe')]",
+      "networkSecurityGroupName": "[concat(parameters('dnsName'), '-nsg')]"
     },
     "resources": [
         {
@@ -153,6 +154,9 @@
         "type": "Microsoft.Network/virtualNetworks",
         "name": "[parameters('virtualNetworkName')]",
         "location": "[parameters('location')]",
+        "dependsOn": [
+            "[concat('Microsoft.Network/networkSecurityGroups/', variables('networkSecurityGroupName'))]"
+        ],
         "properties": {
           "addressSpace": {
             "addressPrefixes": [
@@ -163,7 +167,10 @@
             {
               "name": "[parameters('dbSubnetName')]",
               "properties": {
-                "addressPrefix": "[parameters('dbSubnetAddressPrefix')]"
+                "addressPrefix": "[parameters('dbSubnetAddressPrefix')]",
+                "networkSecurityGroup": {
+                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupName'))]"
+                  }
               }
             },
             {
@@ -177,6 +184,30 @@
                 "properties": {
                   "addressPrefix": "[parameters('frontSubnetAddressPrefix')]"
                 }
+            }
+          ]
+        }
+      },
+      {
+        "apiVersion": "2015-06-15",
+        "type": "Microsoft.Network/networkSecurityGroups",
+        "name": "[variables('networkSecurityGroupName')]",
+        "location": "[parameters('location')]",
+        "properties": {
+          "securityRules": [
+            {
+              "name": "port_22",
+              "properties": {
+                "description": "Port 22",
+                "protocol": "Tcp",
+                "sourcePortRange": "*",
+                "destinationPortRange": "22",
+                "sourceAddressPrefix": "*",
+                "destinationAddressPrefix": "*",
+                "access": "Allow",
+                "priority": 100,
+                "direction": "Inbound"
+              }
             }
           ]
         }
