@@ -136,6 +136,10 @@
             "zones": [
                 "[parameters('zones')]"
             ],
+            "sku":
+            {
+                "name": "Standard"
+            },
             "properties": {
                 "publicIPAllocationMethod": "Static",
                 "dnsSettings": {
@@ -177,13 +181,17 @@
         }
       },
       {
-        "apiVersion": "2015-06-15",
+        "apiVersion": "2017-08-01",
         "type": "Microsoft.Network/loadBalancers",
         "name": "[variables('lbName')]",
         "location": "[parameters('location')]",
         "dependsOn": [
             "[concat('Microsoft.Network/publicIPAddresses/', variables('lbPublicIPName'))]"
         ],
+        "sku":
+            {
+                "name": "Standard"
+            },
         "properties": {
             "frontendIPConfigurations": [
                 {
