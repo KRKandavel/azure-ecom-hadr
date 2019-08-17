@@ -158,9 +158,9 @@
         "customScriptFilePath": "[uri(parameters('_artifactsLocation'), concat('datatier/scripts/azuremysql.sh', parameters('_artifactsLocationSasToken')))]",
         "mysqlConfigFilePath": "[uri(parameters('_artifactsLocation'), concat('datatier/scripts/my.cnf.template', parameters('_artifactsLocationSasToken')))]",
 
-        "vnetName": "[uniqueString(resourceGroup().id, parameters('virtualNetworkName'))]",
+        "vnetName": "[parameters('virtualNetworkName'))]",
         "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',parameters('virtualNetworkName'))]",
-        "dbsubnetName": "[uniqueString(resourceGroup().id, parameters('dbSubnetName'))]",
+        "dbsubnetName": "[parameters('dbSubnetName'))]",
         "dbsubnetID": "[concat(variables('vnetID'), '/subnets/', parameters('dbSubnetName'))]",
 
         "nodeCount": 2,
