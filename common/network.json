@@ -126,6 +126,7 @@
       "ilbBackendAddressPoolID": "[concat(variables('lbID'),'/backendAddressPools/', variables('ilbBackendAddressPoolName'))]",
       "sshIPConfigName": "[concat(parameters('dnsName'), '-sshIPCfg')]",
       "sshIPConfig": "[concat(variables('lbID'),'/frontendIPConfigurations/',variables('sshIPConfigName'))]",
+      "lbProbeID": "[concat(variables('lbID'),'/probes/tcpProbe')]"
     },
     "resources": [
         {
@@ -279,6 +280,57 @@
                         "frontendPort": "[parameters('mysqlProbePort1')]",
                         "backendPort": 9200,
                         "enableFloatingIP": false
+                    }
+                }
+            ],
+            "loadBalancingRules": [
+                {
+                    "name": "LBRule1",
+                    "properties": {
+                        "frontendIPConfiguration": {
+                            "id": "[variables('sshIPConfig')]"
+                        },
+                        "backendAddressPool": {
+                            "id": "[variables('ilbBackendAddressPoolID')]"
+                        },
+                        "protocol": "Tcp",
+                        "frontendPort": 80,
+                        "backendPort": 80,
+                        "enableFloatingIP": false,
+                        "idleTimeoutInMinutes": 5,
+                        "probe": {
+                          "id": "[variables('lbProbeID')]"
+                        }
+                    }
+                },
+                {
+                    "name": "LBRule2",
+                    "properties": {
+                        "frontendIPConfiguration": {
+                            "id": "[variables('sshIPConfig')]"
+                        },
+                        "backendAddressPool": {
+                            "id": "[variables('ilbBackendAddressPoolID')]"
+                        },
+                        "protocol": "Tcp",
+                        "frontendPort": 443,
+                        "backendPort": 443,
+                        "enableFloatingIP": false,
+                        "idleTimeoutInMinutes": 5,
+                        "probe": {
+                          "id": "[variables('lbProbeID')]"
+                        }
+                    }
+                }
+            ],
+            "probes": [
+                {
+                    "name": "tcpProbe",
+                    "properties": {
+                       "protocol": "Tcp",
+                        "port": 80,
+                        "intervalInSeconds": 5,
+                        "numberOfProbes": 2
                     }
                 }
             ]
