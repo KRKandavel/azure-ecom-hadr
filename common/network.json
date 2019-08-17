@@ -97,6 +97,13 @@
             "description": "public IP name for MySQL loadbalancer"
         }
     },
+    "zones": {
+        "type": "string",
+        "defaultValue": "1",
+        "metadata": {
+            "description": "Zones for all resources."
+        }
+    },
     "location": {
         "type": "string",
         "defaultValue": "[resourceGroup().location]",
@@ -126,6 +133,9 @@
             "type": "Microsoft.Network/publicIPAddresses",
             "name": "[variables('lbPublicIPName')]",
             "location": "[parameters('location')]",
+            "zones": [
+                "[parameters('zones')]"
+            ],
             "properties": {
                 "publicIPAllocationMethod": "Static",
                 "dnsSettings": {
