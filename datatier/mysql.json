@@ -79,7 +79,7 @@
         },
         "imagePublisher": {
             "type": "string",
-            "defaultValue": "OpenLogic",
+            "defaultValue": "Canonical",
             "allowedValues": [
                 "OpenLogic",
                 "Canonical"
@@ -90,7 +90,7 @@
         },
         "imageOffer": {
             "type": "string",
-            "defaultValue": "CentOS",
+            "defaultValue": "UbuntuServer",
             "allowedValues": [
                 "CentOS",
                 "UbuntuServer"
@@ -101,11 +101,12 @@
         },
         "imageSKU": {
             "type": "string",
-            "defaultValue": "6.6",
+            "defaultValue": "16.04.0-LTS"
             "allowedValues": [
                 "6.5",
                 "6.6",
-                "14.04.5-LTS"
+                "14.04.5-LTS",
+                "16.04.0-LTS"
             ],
             "metadata": {
                 "description": "VM OS version"

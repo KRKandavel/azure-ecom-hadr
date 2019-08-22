@@ -14,7 +14,7 @@ RPLPWD=${4}
 ROOTPWD=${5}
 PROBEPWD=${6}
 MASTERIP=${7}
-VERSION=5.5
+VERSION=5.7
 
 MOUNTPOINT="/datadrive"
 RAIDCHUNKSIZE=512
@@ -200,10 +200,10 @@ install_mysql_ubuntu() {
 	apt-get install -y mysql-server-$VERSION
 	chown -R mysql:mysql "${MOUNTPOINT}/mysql/mysql"
 	apt-get install -y mysql-server-$VERSION
-	wget http://dev.mysql.com/get/Downloads/Connector-Python/mysql-connector-python_2.1.3-1ubuntu14.04_all.deb
-	dpkg -i mysql-connector-python_2.1.3-1ubuntu14.04_all.deb
-	wget http://dev.mysql.com/get/Downloads/MySQLGUITools/mysql-utilities_1.6.4-1ubuntu14.04_all.deb
-    dpkg -i mysql-utilities_1.6.4-1ubuntu14.04_all.deb
+	wget http://dev.mysql.com/get/Downloads/Connector-Python/mysql-connector-python_8.0.17-1ubuntu16.04_all.deb
+	dpkg -i mysql-connector-python_8.0.17-1ubuntu16.04_all.deb
+	wget http://dev.mysql.com/get/Downloads/MySQLGUITools/mysql-utilities_1.6.5-1ubuntu16.04_all.deb
+    dpkg -i mysql-utilities_1.6.5-1ubuntu16.04_all.deb
     apt-get -y install xinetd
 }
 
