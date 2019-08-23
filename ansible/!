@@ -1,0 +1,38 @@
+---
+- name: Create Azure Resources for HADR
+  hosts: localhost
+  connection: local
+
+  vars_files:
+    - ./vars/common.yml
+    - ./vars/vnet.yml
+    - ./vars/aks.yml  
+    - ./vars/acr.yml  
+
+  tasks:
+  - name: Ensure reosurce group exists
+    azure_rm_resourcegroup:
+      name: "{{ resource_group }}"
+      location: "{{ location }}"
+  
+  - name: Create vnet
+    include_tasks: ./roles/vnet/create.yml    
+
+  - name: Create ACR
+    include_tasks: ./roles/acr/create.yml
+
+  - name: List support K8S versions
+    azure_rm_aksversion_facts:
+        location: "{{ location }}"
+    register: k8sver
+
+  - name: Create AKS
+    vars:
+        vnet_subnet_id: "{{ subnet.state.id }}"
+        k8s_sup_ver: "{{ k8sver.azure_aks_versions[-1] }}"
+    include_tasks: ./roles/aks/create.yml
+
+  - name: Show AKS cluster detail
+    debug:
+        var: aks    
+

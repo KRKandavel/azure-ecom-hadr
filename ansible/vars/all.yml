@@ -1,0 +1,16 @@
+---
+
+# Variables here are applicable to all host groups
+
+resource_group: hadrpaasrg
+location: southeastasia
+
+# AZUREES specific variables
+
+aks_name: hadrpassaks
+username: azureuser
+ssh_key: "ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAQEAmQvBuV/bdawUou3Kptzy4nG799rNJm1Sxre4WxylgXiau3TOAvyVmFER3u7fU1JvSk/lYxhu2VsEtd4N5HojGkQFBCoF59JkPhkUZRREKo1xCR22rAXWjWmVcev5SMrQ6CZbm1rJm/HEh8WX6lm8bireyIkvDuho2NP9eVZL3YNsd2xZqu0oiGf+9pYrWyZFUd7/mfz6H2zo9DgFGWRc698CuXrUe0ZAtDT+L8WP9c9vkWximrLf7Yj6l1ONoT1wmo6s9FK6WW+KFueSvRibCGcnzOZpp88LmOzZXZOiR1RxnugappHsdhwAZIp0ixe8xktqtB3sKUlHHpRiTBYGSQ== rsa-key-20180214"
+client_id: "95fd831b-0db2-4db1-9bb4-edc5330d6eef"
+client_secret: "df124f74-1645-4a30-8352-eb789d575fb3"
+
+

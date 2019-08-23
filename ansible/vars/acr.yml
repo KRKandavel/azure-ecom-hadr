@@ -1,0 +1,8 @@
+---
+
+# AZUREES specific variables
+
+acr_name: hadrpassacr
+acr_sku: Standard
+
+

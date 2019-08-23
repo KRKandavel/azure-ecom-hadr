@@ -1,0 +1,7 @@
+---
+
+# Variables here are applicable to all host groups
+
+resource_group: hadrpaasrg
+location: southeastasia
+

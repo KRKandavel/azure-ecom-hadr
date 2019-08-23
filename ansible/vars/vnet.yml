@@ -1,0 +1,9 @@
+---
+
+# AZUREES specific variables
+
+vnet_name: hadrpassvnet
+subnet_name: hadrpasssubnet-1
+
+
+
