@@ -343,7 +343,7 @@ configure_mysql() {
     fi
 
     create_mycnf
-    if [ -f /etc/mysql/my.cnf && -f /etc/my.cnf ];
+    if [ -f /etc/mysql/my.cnf ] &&  [ -f /etc/my.cnf ];
     then
         cat /etc/my.cnf >> /etc/mysql/my.cnf
     fi
