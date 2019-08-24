@@ -113,7 +113,7 @@
             "metadata": {
                 "description": "Auto-generated token to access _artifactsLocation"
             },
-            "defaultValue": "948f32b8f47472965796a433cf16c88a2a9263c4"
+            "defaultValue": "?token=948f32b8f47472965796a433cf16c88a2a9263c4"
         }
     },
     "variables": {
