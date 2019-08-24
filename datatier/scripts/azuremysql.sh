@@ -343,14 +343,26 @@ configure_mysql() {
     fi
 
     create_mycnf
+    if [ -f /etc/mysql/my.cnf && -f /etc/my.cnf ];
+    then
+        cat /etc/my.cnf >> /etc/mysql/my.cnf
+    fi
+
     /etc/init.d/mysql restart
     mysql_secret=$(awk '/password/{print $NF}' ${HOME}/.mysql_secret)
+if [ ${?} -eq 0 ];
+then
     mysqladmin -u root --password=${mysql_secret} password ${ROOTPWD}
+else
+    sudo mysql -u root <<EOF
+ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '${ROOTPWD}';
+FLUSH PRIVILEGES;
+EOF
+fi
+
 if [ ${NODEID} -eq 1 ];
 then
     mysql -u root -p"${ROOTPWD}" <<EOF
-SET PASSWORD FOR 'root'@'127.0.0.1' = PASSWORD('${ROOTPWD}');
-SET PASSWORD FOR 'root'@'::1' = PASSWORD('${ROOTPWD}');
 CREATE USER 'admin'@'%' IDENTIFIED BY '${ROOTPWD}';
 GRANT ALL PRIVILEGES ON *.* TO 'admin'@'%' with grant option;
 FLUSH PRIVILEGES;
