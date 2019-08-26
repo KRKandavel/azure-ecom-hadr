@@ -200,8 +200,8 @@ install_mysql_ubuntu() {
 	apt-get install -y mysql-server-$VERSION
 	chown -R mysql:mysql "${MOUNTPOINT}/mysql/mysql"
 	apt-get install -y mysql-server-$VERSION
-    wget http://dev.mysql.com/get/Downloads/Connector-Python/mysql-connector-python-py3_8.0.17-1ubuntu16.04_all.deb
-	dpkg -i mysql-connector-python-py3_8.0.17-1ubuntu16.04_all.deb
+    wget http://dev.mysql.com/get/Downloads/Connector-Python/mysql-connector-python_2.1.6-1ubuntu16.04_all.deb
+	dpkg -i mysql-connector-python_2.1.6-1ubuntu16.04_all.deb
 	wget http://dev.mysql.com/get/Downloads/MySQLGUITools/mysql-utilities_1.6.5-1ubuntu16.04_all.deb
     dpkg -i mysql-utilities_1.6.5-1ubuntu16.04_all.deb
     apt-get -y install xinetd
