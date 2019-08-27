@@ -16,6 +16,11 @@ PROBEPWD=${6}
 MASTERIP=${7}
 VERSION=5.7
 
+echo "NodeID...... ${NODEID}"
+echo "root password.... ${ROOTPWD}"
+echo "rpl password.... ${RPLPWD}"
+echo "probe password.... ${PROBEPWD}"
+
 MOUNTPOINT="/datadrive"
 RAIDCHUNKSIZE=512
 
@@ -354,6 +359,7 @@ if [ ${?} -eq 0 ];
 then
     mysqladmin -u root --password=${mysql_secret} password ${ROOTPWD}
 else
+    echo 'root '
     sudo mysql -u root <<EOF
 ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '${ROOTPWD}';
 FLUSH PRIVILEGES;
