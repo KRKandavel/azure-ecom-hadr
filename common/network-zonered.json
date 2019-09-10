@@ -1,0 +1,597 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "dnsName": {
+            "type": "string",
+            "metadata": {
+                "description": "Connect to your cluster using dnsName.location.cloudapp.azure.com"
+            }
+      },
+      "virtualNetworkName": {
+        "type": "string"
+      },
+      "virtualNetworkAddressPrefix": {
+        "type": "string",
+        "defaultValue": "10.0.0.0/8",
+        "metadata": {
+            "description": "Address range for the virtual network in CIDR notation"
+        }
+      },
+      "dbSubnetName": {
+        "type": "string"
+      },
+      "dbSubnetAddressPrefix": {
+        "type": "string",
+        "defaultValue": "10.0.1.0/24",
+        "metadata": {
+            "description": "Subnet Address range for the DB in CIDR notation"
+        }
+      },
+      "vmSubnetName": {
+        "type": "string"
+      },
+      "vmSubnetAddressPrefix": {
+        "type": "string",
+        "defaultValue": "10.0.2.0/24",
+        "metadata": {
+            "description": "Subnet Address range for the APP in CIDR notation"
+        }
+      },
+      "aksSubnetName": {
+        "type": "string"
+      },
+      "aksSubnetAddressPrefix": {
+        "type": "string",
+        "defaultValue": "10.240.0.0/16",
+        "metadata": {
+            "description": "Subnet Address range for the FRONT network in CIDR notation"
+        }
+      },
+      "agwSubnetName": {
+        "type": "string"
+      },
+      "agwSubnetAddressPrefix": {
+        "type": "string",
+        "defaultValue": "10.0.0.0/28",
+        "metadata": {
+            "description": "Subnet Address range for the FRONT network in CIDR notation"
+        }
+      },
+      "mysqlFrontEndPort0": {
+        "type": "int",
+        "defaultValue": 3306,
+        "metadata": {
+            "description": "MySQL public port master"
+        }
+    },
+    "mysqlFrontEndPort1": {
+        "type": "int",
+        "defaultValue": 3307,
+        "metadata": {
+            "description": "MySQL public port slave"
+        }
+    },
+    "sshNatRuleFrontEndPort0": {
+        "type": "int",
+        "defaultValue": 64001,
+        "metadata": {
+            "description": "public ssh port for VM1"
+        }
+    },
+    "sshNatRuleFrontEndPort1": {
+        "type": "int",
+        "defaultValue": 64002,
+        "metadata": {
+            "description": "public ssh port for VM2"
+        }
+    },
+    "mysqlProbePort0": {
+        "type": "int",
+        "defaultValue": 9200,
+        "metadata": {
+            "description": "MySQL public port master"
+        }
+    },
+    "mysqlProbePort1": {
+        "type": "int",
+        "defaultValue": 9201,
+        "metadata": {
+            "description": "MySQL public port slave"
+        }
+    },
+    "mysqlLBIPAddr": {
+        "type": "string",
+        "defaultValue": "10.0.1.100",
+        "metadata": {
+            "description": "private IP address for MySQL loadbalancer"
+        }
+    },
+    "publicIPName": {
+        "type": "string",
+        "defaultValue": "appgwIP01",
+        "metadata": {
+            "description": "public IP name for MySQL loadbalancer"
+        }
+    },
+    "applicationGatewaySize": {
+        "type": "string",
+        "allowedValues": [
+            "Standard_v2",
+            "WAF_v2"
+          ],
+         "defaultValue": "Standard_v2",
+         "metadata": {
+         "description": "Specifies the application gateway SKU name."
+        }
+    },
+    "applicationGatewayTier": {
+        "type": "string",
+        "allowedValues": [
+            "Standard_v2",
+            "WAF_v2"
+        ],
+        "defaultValue": "Standard_v2",
+        "metadata": {
+          "description": "Application gateway tier"
+        }
+    },
+    "applicationGatewayCapacity": {
+        "type": "int",
+        "allowedValues": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10
+        ],
+        "defaultValue": 2,
+        "metadata": {
+        "description": "Specifies the number of the application gateway instances."
+        }
+    },
+    "agwbackendIpAddress1": {
+        "type": "string",
+        "defaultValue": "10.0.1.5",
+        "metadata": {
+          "description": "IP Address for Backend Server 1"
+        }
+      },
+      "agwbackendIpAddress2": {
+        "type": "string",
+        "defaultValue": "10.0.1.105",
+        "metadata": {
+          "description": "IP Address for Backend Server 2"
+        }
+      },
+    "lbZones": {
+        "type": "array",
+        "defaultValue": [ "1" ],
+        "metadata": {
+            "description": "Zones for all resources."
+        }
+    },
+    "location": {
+        "type": "string",
+        "defaultValue": "[resourceGroup().location]",
+        "metadata": {
+          "description": "Location for all resources."
+        }
+      }
+    },
+    "variables": {
+      "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',parameters('virtualNetworkName'))]",
+      "dbSubnet": "[concat(variables('vnetID'),'/subnets/',parameters('dbSubnetName'))]",
+      "vmSubnet": "[concat(variables('vnetID'),'/subnets/',parameters('vmSubnetName'))]",
+      "aksSubnet": "[concat(variables('vnetID'),'/subnets/',parameters('aksSubnetName'))]",
+      "agwSubnet": "[concat(variables('vnetID'),'/subnets/',parameters('agwSubnetName'))]",
+
+      "lbPrivateIPAddr": "[parameters('mysqlLBIPAddr')]", 
+      "lbName": "[concat(parameters('dnsName'), '-lb')]",
+      "lbID": "[resourceId('Microsoft.Network/loadBalancers',variables('lbName'))]",
+      "ilbBackendAddressPoolName": "[concat(parameters('dnsName'), '-ilbBackendPool')]",
+      "ilbBackendAddressPoolID": "[concat(variables('lbID'),'/backendAddressPools/', variables('ilbBackendAddressPoolName'))]",
+      "sshIPConfigName": "[concat(parameters('dnsName'), '-sshIPCfg')]",
+      "sshIPConfig": "[concat(variables('lbID'),'/frontendIPConfigurations/',variables('sshIPConfigName'))]",
+      "lbProbeID": "[concat(variables('lbID'),'/probes/tcpProbe')]",
+      "networkSecurityGroupName": "[concat(parameters('dnsName'), '-nsg')]",
+
+      "agwPublicIPName": "[parameters('publicIPName')]",
+      "agwPublicIPRef": "[resourceId('Microsoft.Network/publicIPAddresses',variables('agwPublicIPName'))]",
+      "agwName": "[concat(parameters('dnsName'), '-agw')]",
+      "agwBackendAddressPoolName": "[concat(parameters('dnsName'), '-agwBackendPool')]",
+      "agwFrontendIPConfiguration": "[resourceId('Microsoft.Network/applicationGateways/frontendIPConfigurations', variables('agwName'), concat(parameters('dnsName'),'appGatewayFrontendIP'))]",
+      "agwFrontendPort": "[resourceId('Microsoft.Network/applicationGateways/frontendPorts', variables('agwName'), concat(parameters('dnsName'),'appGatewayFrontendPort'))]",
+      "agwhttpListener": "[resourceId('Microsoft.Network/applicationGateways/httpListeners', variables('agwName'), concat(parameters('dnsname'), 'appGatewayHttpListener'))]",
+      "agwbackendHttpSettings": "[resourceId('Microsoft.Network/applicationGateways/backendHttpSettingsCollection', variables('agwName'), concat(parameters('dnsname'), 'appGatewayBackendHttpSettings'))]",
+
+      "applicationGatewayID": "[resourceId('Microsoft.Network/applicationGateways', variables('agwName'))]",
+      "agwbackendAddressPool": "[concat(variables('applicationGatewayID'), '/backendAddressPools/', variables('agwBackendAddressPoolName'))]"
+
+    },
+    "resources": [
+        {
+            "apiVersion": "2017-08-01",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "name": "[variables('agwPublicIPName')]",
+            "location": "[parameters('location')]",
+            "sku":
+            {
+                "name": "Standard"
+            },
+            "properties": {
+                "publicIPAllocationMethod": "Static",
+                "dnsSettings": {
+                    "domainNameLabel": "[parameters('dnsName')]"
+                }
+            }
+        },
+        {
+        "apiVersion": "2015-06-15",
+        "type": "Microsoft.Network/virtualNetworks",
+        "name": "[parameters('virtualNetworkName')]",
+        "location": "[parameters('location')]",
+        "dependsOn": [
+            "[concat('Microsoft.Network/networkSecurityGroups/', variables('networkSecurityGroupName'))]"
+        ],
+        "properties": {
+          "addressSpace": {
+            "addressPrefixes": [
+              "[parameters('virtualNetworkAddressPrefix')]"
+            ]
+          },
+          "subnets": [
+            {
+              "name": "[parameters('dbSubnetName')]",
+              "properties": {
+                "addressPrefix": "[parameters('dbSubnetAddressPrefix')]",
+                "networkSecurityGroup": {
+                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupName'))]"
+                  }
+              }
+            },
+            {
+                "name": "[parameters('vmSubnetName')]",
+                "properties": {
+                  "addressPrefix": "[parameters('vmSubnetAddressPrefix')]"
+                }
+            },
+            {
+                "name": "[parameters('aksSubnetName')]",
+                "properties": {
+                  "addressPrefix": "[parameters('aksSubnetAddressPrefix')]"
+                }
+            },
+            {
+                "name": "[parameters('agwSubnetName')]",
+                "properties": {
+                  "addressPrefix": "[parameters('agwSubnetAddressPrefix')]"
+                }
+            }
+          ]
+        }
+      },
+      {
+        "apiVersion": "2015-06-15",
+        "type": "Microsoft.Network/networkSecurityGroups",
+        "name": "[variables('networkSecurityGroupName')]",
+        "location": "[parameters('location')]",
+        "properties": {
+          "securityRules": [
+            {
+              "name": "port_22",
+              "properties": {
+                "description": "Port 22",
+                "protocol": "Tcp",
+                "sourcePortRange": "*",
+                "destinationPortRange": "22",
+                "sourceAddressPrefix": "*",
+                "destinationAddressPrefix": "*",
+                "access": "Allow",
+                "priority": 100,
+                "direction": "Inbound"
+              }
+            },
+            {
+                "name": "port_3306",
+                "properties": {
+                  "description": "Port 3306",
+                  "protocol": "Tcp",
+                  "sourcePortRange": "*",
+                  "destinationPortRange": "3306",
+                  "sourceAddressPrefix": "*",
+                  "destinationAddressPrefix": "*",
+                  "access": "Allow",
+                  "priority": 110,
+                  "direction": "Inbound"
+                }
+              }
+          ]
+        }
+      },
+      {
+        "apiVersion": "2017-08-01",
+        "type": "Microsoft.Network/loadBalancers",
+        "name": "[variables('lbName')]",
+        "location": "[parameters('location')]",
+        "dependsOn": [
+            "[concat('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'))]"
+        ],
+        "sku":
+            {
+                "name": "Standard"
+            },
+        "properties": {
+            "frontendIPConfigurations": [
+                {
+                    "name": "[variables('sshIPConfigName')]",
+                    "zones": "[parameters('lbZones')]",
+                    "properties": {
+                        "subnet": {
+                            "id": "[variables('dbSubnet')]"
+                        },
+                        "privateIPAddress": "[variables('lbPrivateIPAddr')]",
+                        "privateIPAllocationMethod": "Static"
+                    }
+                }
+            ],
+            "backendAddressPools": [
+                {
+                    "name": "[variables('ilbBackendAddressPoolName')]"
+                }
+            ],
+            "inboundNatRules": [
+                {
+                    "name": "[concat(parameters('dnsName'),'NatRule0')]",
+                    "properties": {
+                        "frontendIPConfiguration": {
+                            "id": "[variables('sshIPConfig')]"
+                        },
+                        "protocol": "Tcp",
+                        "frontendPort": "[parameters('sshNatRuleFrontEndPort0')]",
+                        "backendPort": 22,
+                        "enableFloatingIP": false
+                    }
+                },
+                {
+                    "name": "[concat(parameters('dnsName'),'NatRule1')]",
+                    "properties": {
+                        "frontendIPConfiguration": {
+                            "id": "[variables('sshIPConfig')]"
+                        },
+                        "protocol": "Tcp",
+                        "frontendPort": "[parameters('sshNatRuleFrontEndPort1')]",
+                        "backendPort": 22,
+                        "enableFloatingIP": false
+                    }
+                },
+                {
+                    "name": "[concat(parameters('dnsName'),'MySQLNatRule0')]",
+                    "properties": {
+                        "frontendIPConfiguration": {
+                            "id": "[variables('sshIPConfig')]"
+                        },
+                        "protocol": "Tcp",
+                        "frontendPort": "[parameters('mysqlFrontEndPort0')]",
+                        "backendPort": 3306,
+                        "enableFloatingIP": false
+                    }
+                },
+                {
+                    "name": "[concat(parameters('dnsName'),'MySQLNatRule1')]",
+                    "properties": {
+                        "frontendIPConfiguration": {
+                            "id": "[variables('sshIPConfig')]"
+                        },
+                        "protocol": "Tcp",
+                        "frontendPort": "[parameters('mysqlFrontEndPort1')]",
+                        "backendPort": 3306,
+                        "enableFloatingIP": false
+                    }
+                },
+                {
+                    "name": "[concat(parameters('dnsName'),'ProbeNatRule0')]",
+                    "properties": {
+                        "frontendIPConfiguration": {
+                            "id": "[variables('sshIPConfig')]"
+                        },
+                        "protocol": "Tcp",
+                        "frontendPort": "[parameters('mysqlProbePort0')]",
+                        "backendPort": 9200,
+                        "enableFloatingIP": false
+                    }
+                },
+                {
+                    "name": "[concat(parameters('dnsName'),'ProbeNatRule1')]",
+                    "properties": {
+                        "frontendIPConfiguration": {
+                            "id": "[variables('sshIPConfig')]"
+                        },
+                        "protocol": "Tcp",
+                        "frontendPort": "[parameters('mysqlProbePort1')]",
+                        "backendPort": 9200,
+                        "enableFloatingIP": false
+                    }
+                }
+            ],
+            "loadBalancingRules": [
+                {
+                    "name": "LBRule1",
+                    "properties": {
+                        "frontendIPConfiguration": {
+                            "id": "[variables('sshIPConfig')]"
+                        },
+                        "backendAddressPool": {
+                            "id": "[variables('ilbBackendAddressPoolID')]"
+                        },
+                        "protocol": "Tcp",
+                        "frontendPort": 80,
+                        "backendPort": 80,
+                        "enableFloatingIP": false,
+                        "idleTimeoutInMinutes": 5,
+                        "probe": {
+                          "id": "[variables('lbProbeID')]"
+                        }
+                    }
+                },
+                {
+                    "name": "LBRule2",
+                    "properties": {
+                        "frontendIPConfiguration": {
+                            "id": "[variables('sshIPConfig')]"
+                        },
+                        "backendAddressPool": {
+                            "id": "[variables('ilbBackendAddressPoolID')]"
+                        },
+                        "protocol": "Tcp",
+                        "frontendPort": 443,
+                        "backendPort": 443,
+                        "enableFloatingIP": false,
+                        "idleTimeoutInMinutes": 5,
+                        "probe": {
+                          "id": "[variables('lbProbeID')]"
+                        }
+                    }
+                }
+            ],
+            "probes": [
+                {
+                    "name": "tcpProbe",
+                    "properties": {
+                       "protocol": "Tcp",
+                        "port": 80,
+                        "intervalInSeconds": 5,
+                        "numberOfProbes": 2
+                    }
+                }
+            ]
+        }
+    },
+    {
+        "apiVersion": "2019-04-01",
+        "name": "[variables('agwName')]",
+        "type": "Microsoft.Network/applicationGateways",
+        "location": "[parameters('location')]",
+        "dependsOn": [
+          "[variables('vnetID')]",
+          "[variables('agwPublicIPRef')]"
+        ],
+        "properties": {
+            "sku": {
+                "name": "[parameters('applicationGatewaySize')]",
+                "tier": "[parameters('applicationGatewayTier')]",
+                "capacity": "[parameters('applicationGatewaycapacity')]"
+            },
+            "gatewayIPConfigurations": [
+              {
+                  "name": "[concat(parameters('dnsName'),'appGatewayIpConfig')]",
+                  "properties": {
+                      "subnet": {
+                          "id": "[variables('agwsubnet')]"
+                      }
+                  }
+              }
+            ],
+            "frontendIPConfigurations": [
+              {
+                  "name": "[concat(parameters('dnsName'),'appGatewayFrontendIP')]",
+                  "properties": {
+                      "PublicIPAddress": {
+                          "id": "[variables('agwPublicIPRef')]"
+                      }
+                  }
+              }
+            ],
+            "frontendPorts": [
+              {
+                  "name": "[concat(parameters('dnsName'),'appGatewayFrontendPort')]",
+                  "properties": {
+                      "Port": 80
+                  }
+              }
+            ],
+            "backendAddressPools": [
+              {
+                  "name": "[variables('agwBackendAddressPoolName')]",
+                  "properties": {
+                    "BackendAddresses": [
+                      {
+                        "IpAddress": "[parameters('agwbackendIpAddress1')]"
+                      },
+                      {
+                        "IpAddress": "[parameters('agwbackendIpAddress2')]"
+                      }
+                    ]
+                  }                  
+              }
+            ],
+            "backendHttpSettingsCollection": [
+              {
+                  "name": "[concat(parameters('dnsName'),'appGatewayBackendHttpSettings')]",
+                  "properties": {
+                      "Port": 80,
+                      "Protocol": "Http",
+                      "CookieBasedAffinity": "Disabled"
+                  }
+              }
+            ],
+            "httpListeners": [
+              {
+                  "name": "[concat(parameters('dnsName'),'appGatewayHttpListener')]",
+                  "properties": {
+                    "FrontendIPConfiguration": {
+                      "Id": "[variables('agwFrontendIPConfiguration')]" 
+                    },
+                    "FrontendPort": {
+                      "Id": "[variables('agwFrontendPort')]"
+                    },
+                      "Protocol": "Http",
+                      "SslCertificate": null
+                  }
+              }
+            ],
+            "requestRoutingRules": [
+              {
+                  "Name": "[concat(parameters('dnsName'),'appGatewayRule1')]",
+                  "properties": {
+                      "RuleType": "Basic",
+                    "httpListener": {
+                      "id": "[variables('agwhttpListener')]"
+                    },
+                    "backendAddressPool": {
+                      "id": "[variables('agwbackendAddressPool')]"
+                    },
+                    "backendHttpSettings": {
+                      "id": "[variables('agwbackendHttpSettings')]"
+                    }
+                  }
+              }
+            ]
+        }
+    }
+    ],
+    "outputs": {
+      "dbSubnetRef": {
+        "value": "[variables('dbSubnet')]",
+        "type": "string"
+      },
+      "vmSubnetRef": {
+        "value": "[variables('vmSubnet')]",
+        "type": "string"
+      },
+      "aksSubnetRef": {
+        "value": "[variables('aksSubnet')]",
+        "type": "string"
+      },
+      "agwSubnetRef": {
+        "value": "[variables('agwSubnet')]",
+        "type": "string"
+      }
+    }
+  }
+  
