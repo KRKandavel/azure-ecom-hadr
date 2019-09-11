@@ -9,7 +9,11 @@
             }
       },
       "virtualNetworkName": {
-        "type": "string"
+        "type": "string",
+        "defaultValue": "hadragcevnet",
+        "metadata": {
+            "description": "Address range for the virtual network in CIDR notation"
+        }
       },
       "virtualNetworkAddressPrefix": {
         "type": "string",
@@ -19,8 +23,12 @@
         }
       },
       "dbSubnetName": {
-        "type": "string"
-      },
+        "type": "string",
+        "defaultValue": "hadragcedbsub",
+        "metadata": {
+            "description": "Address range for the virtual network in CIDR notation"
+        }
+    },
       "dbSubnetAddressPrefix": {
         "type": "string",
         "defaultValue": "10.0.1.0/24",
@@ -29,7 +37,11 @@
         }
       },
       "vmSubnetName": {
-        "type": "string"
+        "type": "string",
+        "defaultValue": "hadragcevmsub",
+        "metadata": {
+            "description": "Address range for the virtual network in CIDR notation"
+        }
       },
       "vmSubnetAddressPrefix": {
         "type": "string",
@@ -38,8 +50,26 @@
             "description": "Subnet Address range for the APP in CIDR notation"
         }
       },
+      "mgmtSubnetName": {
+        "type": "string",
+        "defaultValue": "hadragcemgmtsub",
+        "metadata": {
+            "description": "Address range for the virtual network in CIDR notation"
+        }
+      },
+      "mgmtSubnetAddressPrefix": {
+        "type": "string",
+        "defaultValue": "10.0.3.0/24",
+        "metadata": {
+            "description": "Subnet Address range for the APP in CIDR notation"
+        }
+      },
       "aksSubnetName": {
-        "type": "string"
+        "type": "string",
+        "defaultValue": "hadragceakssub",
+        "metadata": {
+            "description": "Address range for the virtual network in CIDR notation"
+        }
       },
       "aksSubnetAddressPrefix": {
         "type": "string",
@@ -49,7 +79,11 @@
         }
       },
       "agwSubnetName": {
-        "type": "string"
+        "type": "string",
+        "defaultValue": "hadragceagwsub",
+        "metadata": {
+            "description": "Address range for the virtual network in CIDR notation"
+        }
       },
       "agwSubnetAddressPrefix": {
         "type": "string",
@@ -188,6 +222,7 @@
       "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',parameters('virtualNetworkName'))]",
       "dbSubnet": "[concat(variables('vnetID'),'/subnets/',parameters('dbSubnetName'))]",
       "vmSubnet": "[concat(variables('vnetID'),'/subnets/',parameters('vmSubnetName'))]",
+      "mgmtSubnet": "[concat(variables('vnetID'),'/subnets/',parameters('mgmtSubnetName'))]",
       "aksSubnet": "[concat(variables('vnetID'),'/subnets/',parameters('aksSubnetName'))]",
       "agwSubnet": "[concat(variables('vnetID'),'/subnets/',parameters('agwSubnetName'))]",
 
@@ -259,6 +294,12 @@
                 "name": "[parameters('vmSubnetName')]",
                 "properties": {
                   "addressPrefix": "[parameters('vmSubnetAddressPrefix')]"
+                }
+            },
+            {
+                "name": "[parameters('mgmtSubnetName')]",
+                "properties": {
+                  "addressPrefix": "[parameters('mgmtSubnetAddressPrefix')]"
                 }
             },
             {
