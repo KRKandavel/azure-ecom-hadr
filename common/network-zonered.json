@@ -87,7 +87,7 @@
       },
       "agwSubnetAddressPrefix": {
         "type": "string",
-        "defaultValue": "10.0.0.0/28",
+        "defaultValue": "10.0.0.0/24",
         "metadata": {
             "description": "Subnet Address range for the FRONT network in CIDR notation"
         }
