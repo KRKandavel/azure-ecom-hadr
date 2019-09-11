@@ -31,7 +31,7 @@
     },
       "dbSubnetAddressPrefix": {
         "type": "string",
-        "defaultValue": "10.0.1.0/24",
+        "defaultValue": "10.0.2.0/24",
         "metadata": {
             "description": "Subnet Address range for the DB in CIDR notation"
         }
@@ -45,7 +45,7 @@
       },
       "vmSubnetAddressPrefix": {
         "type": "string",
-        "defaultValue": "10.0.2.0/24",
+        "defaultValue": "10.0.1.0/24",
         "metadata": {
             "description": "Subnet Address range for the APP in CIDR notation"
         }
