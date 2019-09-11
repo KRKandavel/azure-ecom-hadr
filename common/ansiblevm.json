@@ -77,38 +77,39 @@
     },
     "variables": {
         "customScriptFilePath": "[uri(parameters('_artifactsLocation'), concat('common/scripts/install_ansible.sh', parameters('_artifactsLocationSasToken')))]",
-
         "vnetName": "[parameters('virtualNetworkName')]",
         "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',parameters('virtualNetworkName'))]",
         "mgmtsubnetName": "[parameters('mgmtSubnetName')]",
         "mgmtsubnetID": "[concat(variables('vnetID'), '/subnets/', parameters('mgmtSubnetName'))]",
-
         "virtualMachineName": "[concat(parameters('dnsName'), '-ansibleVM')]",
         "networkInterfaceName": "[concat(parameters('dnsName'), '-ansibleVMnic')]",
-       
         "publicIpAddressName": "[concat(parameters('dnsName'), '-ansiblePIP')]",
         "publicIpAddressType": "Static",
+        "publicIpAddressDomain": "[concat(parameters('dnsName'), 'ansible')]",
         "publicIpAddressSku": "Basic",
         "osDiskType": "Premium_LRS"
     },
     "resources": [
         {
+            "apiVersion": "2017-08-01",
+            "type": "Microsoft.Network/publicIPAddresses",
             "name": "[variables('publicIpAddressName')]",
-            "type": "Microsoft.Network/publicIpAddresses",
-            "apiVersion": "2018-08-01",
             "location": "[parameters('location')]",
-            "properties": {
-                "publicIpAllocationMethod": "[variables('publicIpAddressType')]"
-            },
-            "sku": {
+            "sku":
+            {
                 "name": "[variables('publicIpAddressSku')]"
             },
-            "tags": {}
+            "properties": {
+                "publicIPAllocationMethod": "Static",
+                "dnsSettings": {
+                    "domainNameLabel": "[variables('publicIpAddressDomain')]"
+                }
+            }
         },
         {
             "name": "[variables('networkInterfaceName')]",
             "type": "Microsoft.Network/networkInterfaces",
-            "apiVersion": "2018-04-01",
+            "apiVersion": "2015-06-15",
             "location": "[parameters('location')]",
             "dependsOn": [
                 "[concat('Microsoft.Network/publicIpAddresses/', variables('publicIpAddressName'))]"
@@ -186,15 +187,14 @@
                 "settings": {
                     "fileUris": [
                         "[variables('customScriptFilePath')]"
-                    ],
+                    ]
                 },
                 "protectedSettings": {
                     "commandToExecute": "[concat(parameters('customScriptCommandToExecute'), ' ',  parameters('ansibleIPAddress'))]"
                 }
-
             },
             "dependsOn": [
-                "[concat('Microsoft.Compute/virtualMachines/', parameters('virtualMachineName'))]"
+                "[concat('Microsoft.Compute/virtualMachines/', variables('virtualMachineName'))]"
             ]
         }
     ],
