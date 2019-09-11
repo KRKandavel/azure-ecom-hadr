@@ -34,7 +34,7 @@
         },
         "mgmtSubnetName": {
             "type": "string",
-            "defaultValue": "mgmtsubnet",
+            "defaultValue": "hadragcemgmtsub",
             "metadata": {
                 "description": "subnet name for the Common nodes"
             }
