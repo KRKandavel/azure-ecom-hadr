@@ -175,7 +175,7 @@
             "tags": {}
         },
         {
-            "name": "[concat(variables('virtualMachineName'),'/CustomScriptForLinux')]",
+            "name": "[concat(variables('virtualMachineName'),'/InstallAnsible')]",
             "type": "Microsoft.Compute/virtualMachines/extensions",
             "location": "[parameters('location')]",
             "apiVersion": "2015-06-15",
