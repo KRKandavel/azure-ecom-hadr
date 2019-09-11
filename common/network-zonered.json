@@ -31,7 +31,7 @@
     },
       "dbSubnetAddressPrefix": {
         "type": "string",
-        "defaultValue": "10.0.2.0/24",
+        "defaultValue": "10.0.1.0/24",
         "metadata": {
             "description": "Subnet Address range for the DB in CIDR notation"
         }
@@ -45,7 +45,7 @@
       },
       "vmSubnetAddressPrefix": {
         "type": "string",
-        "defaultValue": "10.0.1.0/24",
+        "defaultValue": "10.0.2.0/24",
         "metadata": {
             "description": "Subnet Address range for the APP in CIDR notation"
         }
@@ -191,14 +191,14 @@
     },
     "agwbackendIpAddress1": {
         "type": "string",
-        "defaultValue": "10.0.1.5",
+        "defaultValue": "10.0.2.5",
         "metadata": {
           "description": "IP Address for Backend Server 1"
         }
       },
       "agwbackendIpAddress2": {
         "type": "string",
-        "defaultValue": "10.0.1.105",
+        "defaultValue": "10.0.2.105",
         "metadata": {
           "description": "IP Address for Backend Server 2"
         }
