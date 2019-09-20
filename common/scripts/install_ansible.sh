@@ -71,8 +71,8 @@ sudo apt-get install -y mysql-client
 
 sudo apt install -y redis-tools
 
-wget http://dev.mysql.com/get/Downloads/Connector-Python/mysql-connector-python_2.1.6-1ubuntu16.04_all.deb
-dpkg -i mysql-connector-python_2.1.6-1ubuntu16.04_all.deb
+wget http://dev.mysql.com/get/Downloads/Connector-Python/mysql-connector-python_2.1.8-1ubuntu18.04_all.deb
+dpkg -i mysql-connector-python_2.1.8-1ubuntu18.04_all.deb
 wget http://dev.mysql.com/get/Downloads/MySQLGUITools/mysql-utilities_1.6.5-1ubuntu16.04_all.deb
 dpkg -i mysql-utilities_1.6.5-1ubuntu16.04_all.deb
 
