@@ -67,9 +67,11 @@ sudo apt-get install -y kubectl
 iptables -A INPUT -p tcp -m tcp --dport 9090 -j ACCEPT
 iptables-save
 
+sudo apt install -y redis-tools
+
 sudo apt-get install -y mysql-client
 
-sudo apt install -y redis-tools
+sudo apt-get install -y mysql-connector-python
 
 wget http://dev.mysql.com/get/Downloads/Connector-Python/mysql-connector-python_2.1.8-1ubuntu18.04_all.deb
 dpkg -i mysql-connector-python_2.1.8-1ubuntu18.04_all.deb
