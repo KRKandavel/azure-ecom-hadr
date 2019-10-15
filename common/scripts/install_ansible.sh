@@ -1,7 +1,5 @@
 #!/bin/bash
 
-
-
 ## Update and upgrade the packages
 
 sudo apt update && sudo apt dist-upgrade -y
@@ -9,6 +7,10 @@ sudo apt update && sudo apt dist-upgrade -y
 sudo apt install software-properties-common
 
 ## Install pre-requisite packages
+#python -m ensurepip
+#sudo apt install python-pip
+
+#sudo pip install --upgrade pip
 
 sudo apt install -y libssl-dev libffi-dev python-dev python-pip
 
@@ -16,7 +18,7 @@ sudo apt-add-repository --yes --update ppa:ansible/ansible
 
 ## Install Ansible and Azure SDK via pip
 
-sudo apt install ansible
+sudo apt install -y ansible
 
 sudo pip install ansible[azure]
 
@@ -44,7 +46,7 @@ sudo add-apt-repository \
 
 sudo apt-get update
 
-sudo apt-get install docker-ce docker-ce-cli containerd.io
+sudo apt-get install -y docker-ce docker-ce-cli containerd.io
 
 ##install kubectl
 sudo apt-get update && sudo apt-get install -y apt-transport-https
@@ -77,4 +79,10 @@ sudo apt-get install -y mysql-client
 #dpkg -i mysql-connector-python_2.1.8-1ubuntu18.04_all.deb
 #wget http://dev.mysql.com/get/Downloads/MySQLGUITools/mysql-utilities_1.6.5-1ubuntu16.04_all.deb
 #dpkg -i mysql-utilities_1.6.5-1ubuntu16.04_all.deb
+
+sudo apt-get install -y unzip
+wget https://releases.hashicorp.com/terraform/0.12.7/terraform_0.12.7_linux_amd64.zip
+unzip terraform_0.12.7_linux_amd64.zip
+sudo mv terraform /usr/local/bin/
+terraform --version
 
